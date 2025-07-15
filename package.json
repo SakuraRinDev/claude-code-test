@@ -1,7 +1,7 @@
 {
   "name": "claude-code-test",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright UIテストとデバッグ環境 - バイリンガル Hello World ページの包括的テストスイート",
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
