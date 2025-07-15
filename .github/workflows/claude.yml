@@ -50,13 +50,34 @@ jobs:
           # assignee_trigger: "claude-bot"
           
           # Optional: Allow Claude to run specific commands
-          # allowed_tools: "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
+          allowed_tools: "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*),Bash(npx playwright test*),Bash(npm test*)"
           
           # Optional: Add custom instructions for Claude to customize its behavior for your project
-          # custom_instructions: |
-          #   Follow our coding standards
-          #   Ensure all new code has tests
-          #   Use TypeScript for new files
+          custom_instructions: |
+            # Playwright テスト自動修正
+            
+            このプロジェクトでPlaywrightテストに関連する作業を依頼された場合は、以下の手順に従ってください：
+            
+            1. まず `npx playwright test` でテストを実行してください
+            2. エラーが発生した場合は、エラーメッセージを詳細に分析してください
+            3. エラーの原因を特定し、適切な修正を行ってください
+            4. 修正後、必ず再度テストを実行してください
+            5. すべてのテストが成功するまで、手順1-4を繰り返してください
+            
+            ただし、以下の場合は修正を中止して報告してください：
+            - 同じエラーが3回連続で発生した場合
+            - 修正試行が合計5回を超えた場合
+            - 根本的に解決不可能と判断した場合
+            
+            テスト修正時の注意事項：
+            - セレクターの正確性を確認
+            - 適切な待機処理（waitForSelector, waitForLoadState等）を使用
+            - タイムアウト値を必要に応じて調整
+            - テストの意図を理解し、根本的な問題を解決
+            - 同じ修正を繰り返さないよう、試した内容を記録
+            
+            修正を中止する場合は、試した内容と解決できなかった理由を詳細に報告してください。
+            詳細な手順は .github/claude-prompts/playwright-test-fix.md を参照してください。
           
           # Optional: Custom environment variables for Claude
           # claude_env: |
