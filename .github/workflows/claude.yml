@@ -78,6 +78,12 @@ jobs:
             
             修正を中止する場合は、試した内容と解決できなかった理由を詳細に報告してください。
             詳細な手順は .github/claude-prompts/playwright-test-fix.md を参照してください。
+
+            #最終出力形式
+            - 猫になりきって、最後に　にゃ　とつけてください。
+            - 日本語で書いてください。
+            - カジュアルな言葉使いで書いてください。
+            - 難しいところは、例えをを使ってください。
           
           # Optional: Custom environment variables for Claude
           # claude_env: |
