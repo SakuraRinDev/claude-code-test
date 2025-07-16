@@ -1,47 +1,106 @@
 import { test, expect } from '@playwright/test';
 
-// 基本的なページロードテスト
-test.describe('UIデバッグテスト', () => {
+// 牛のウェブサイトの基本テスト
+test.describe('牛のウェブサイトテスト', () => {
   test('ページが正しく読み込まれる', async ({ page }) => {
     await page.goto('/');
     
     // タイトルの確認
-    await expect(page).toHaveTitle('Hello World - ハローワールド');
+    await expect(page).toHaveTitle('牛の世界 - 3D牧場体験');
     
-    // メインコンテナが表示されている
-    const container = page.locator('.container');
-    await expect(container).toBeVisible();
+    // メインヘッダーが表示されている
+    const header = page.locator('.header');
+    await expect(header).toBeVisible();
   });
 
-  test('テキスト要素が正しく表示される', async ({ page }) => {
+  test('ヘッダー要素が正しく表示される', async ({ page }) => {
     await page.goto('/');
     
-    // 見出しの確認
-    const heading = page.locator('h1');
-    await expect(heading).toHaveText('Hello World!');
-    await expect(heading).toBeVisible();
+    // メインタイトルの確認
+    const title = page.locator('.header h1');
+    await expect(title).toContainText('牛の世界へようこそ');
+    await expect(title).toBeVisible();
     
-    // 段落の確認
-    const paragraphs = page.locator('p');
-    await expect(paragraphs).toHaveCount(3);
+    // サブタイトルの確認
+    const subtitle = page.locator('.header p').first();
+    await expect(subtitle).toContainText('3D牧場体験で牛の魅力を発見しよう');
     
-    // 各段落のテキスト確認
-    await expect(paragraphs.nth(0)).toHaveText('こんにちは、世界！');
-    await expect(paragraphs.nth(1)).toHaveText('Welcome to our simple HTML page');
-    await expect(paragraphs.nth(2)).toHaveText('シンプルなHTMLページへようこそ');
+    // 牛の絵文字が表示されている
+    const cowEmojis = page.locator('.cow-emoji');
+    await expect(cowEmojis).toHaveCount(3);
+  });
+
+  test('Three.jsコンテナが表示される', async ({ page }) => {
+    await page.goto('/');
+    
+    // Three.jsコンテナの存在確認
+    const threeContainer = page.locator('#three-container');
+    await expect(threeContainer).toBeVisible();
+    
+    // ローディングテキストが最初に表示される
+    const loadingText = page.locator('#loading');
+    await expect(loadingText).toBeVisible();
+    
+    // Three.jsがロードされるまで少し待つ
+    await page.waitForTimeout(3000);
+    
+    // Three.jsのcanvas要素が生成されているかチェック
+    const canvas = page.locator('#three-container canvas');
+    await expect(canvas).toBeVisible();
+  });
+
+  test('牛の情報カードが表示される', async ({ page }) => {
+    await page.goto('/');
+    
+    // 牛の情報カードの確認
+    const factCards = page.locator('.cow-fact-card');
+    await expect(factCards).toHaveCount(4);
+    
+    // 各カードのタイトル確認
+    await expect(factCards.nth(0).locator('h3')).toContainText('牛の特徴');
+    await expect(factCards.nth(1).locator('h3')).toContainText('牛乳の恵み');
+    await expect(factCards.nth(2).locator('h3')).toContainText('環境との調和');
+    await expect(factCards.nth(3).locator('h3')).toContainText('賢い動物');
+  });
+
+  test('牛の統計セクションが表示される', async ({ page }) => {
+    await page.goto('/');
+    
+    // 統計セクションの確認
+    const statsSection = page.locator('.cow-stats');
+    await expect(statsSection).toBeVisible();
+    
+    // 統計アイテムの確認
+    const statItems = page.locator('.stat-item');
+    await expect(statItems).toHaveCount(4);
+    
+    // 各統計値の確認
+    await expect(statItems.nth(0).locator('.stat-number')).toContainText('1000');
+    await expect(statItems.nth(1).locator('.stat-number')).toContainText('4');
+    await expect(statItems.nth(2).locator('.stat-number')).toContainText('20L');
+    await expect(statItems.nth(3).locator('.stat-number')).toContainText('360°');
+  });
+
+  test('フッターが表示される', async ({ page }) => {
+    await page.goto('/');
+    
+    // フッターの確認
+    const footer = page.locator('.footer');
+    await expect(footer).toBeVisible();
+    await expect(footer).toContainText('牛と自然の調和を大切に');
+    await expect(footer).toContainText('Three.js');
   });
 
   test('スタイルが正しく適用される', async ({ page }) => {
     await page.goto('/');
     
-    // コンテナのスタイル確認
-    const container = page.locator('.container');
-    await expect(container).toHaveCSS('text-align', 'center');
-    await expect(container).toHaveCSS('border-radius', '20px');
+    // ヘッダーのスタイル確認
+    const header = page.locator('.header');
+    await expect(header).toHaveCSS('text-align', 'center');
     
-    // 見出しのスタイル確認
-    const heading = page.locator('h1');
-    await expect(heading).toHaveCSS('font-size', '48px'); // 3rem = 48px (デフォルト)
+    // Three.jsコンテナのスタイル確認
+    const threeContainer = page.locator('#three-container');
+    await expect(threeContainer).toHaveCSS('border-radius', '20px');
   });
 
   test('レスポンシブデザインの確認', async ({ page }) => {
@@ -49,16 +108,16 @@ test.describe('UIデバッグテスト', () => {
     await page.setViewportSize({ width: 1920, height: 1080 });
     await page.goto('/');
     
-    const container = page.locator('.container');
-    await expect(container).toBeVisible();
+    const header = page.locator('.header');
+    await expect(header).toBeVisible();
     
     // タブレットサイズ
     await page.setViewportSize({ width: 768, height: 1024 });
-    await expect(container).toBeVisible();
+    await expect(header).toBeVisible();
     
     // モバイルサイズ
     await page.setViewportSize({ width: 375, height: 667 });
-    await expect(container).toBeVisible();
+    await expect(header).toBeVisible();
   });
 
   test('背景グラデーションが適用される', async ({ page }) => {
@@ -72,39 +131,123 @@ test.describe('UIデバッグテスト', () => {
     
     expect(backgroundImage).toContain('linear-gradient');
   });
+
+  test('アニメーションが動作する', async ({ page }) => {
+    await page.goto('/');
+    
+    // 牛の絵文字のアニメーション確認
+    const cowEmoji = page.locator('.cow-emoji').first();
+    await expect(cowEmoji).toBeVisible();
+    
+    // CSSアニメーションが適用されているか確認
+    const animationName = await cowEmoji.evaluate(el => 
+      window.getComputedStyle(el).animationName
+    );
+    expect(animationName).toBe('bounce');
+  });
+});
+
+// Three.js 3D機能のテスト
+test.describe('Three.js 3D機能テスト', () => {
+  test('Three.jsライブラリが読み込まれる', async ({ page }) => {
+    await page.goto('/');
+    
+    // Three.jsライブラリの存在確認
+    const threeExists = await page.evaluate(() => typeof window.THREE !== 'undefined');
+    expect(threeExists).toBe(true);
+  });
+
+  test('3D牛のレンダリング', async ({ page }) => {
+    await page.goto('/');
+    
+    // Three.jsの初期化を待つ
+    await page.waitForTimeout(5000);
+    
+    // canvas要素が作成されているか確認
+    const canvas = page.locator('#three-container canvas');
+    await expect(canvas).toBeVisible();
+    
+    // canvasに何かが描画されているか確認（空でないか）
+    const canvasData = await canvas.evaluate((canvas: HTMLCanvasElement) => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      return imageData.data.some(pixel => pixel !== 0);
+    });
+    
+    // WebGLレンダラーの場合は直接確認できないので、canvas要素の存在で判断
+    await expect(canvas).toBeVisible();
+  });
+
+  test('Three.jsエラーハンドリング', async ({ page }) => {
+    // コンソールエラーを監視
+    const consoleErrors: string[] = [];
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(msg.text());
+      }
+    });
+
+    await page.goto('/');
+    await page.waitForTimeout(5000);
+
+    // Three.js関連の致命的なエラーがないことを確認
+    const threeErrors = consoleErrors.filter(error => 
+      error.toLowerCase().includes('three') || 
+      error.toLowerCase().includes('webgl')
+    );
+    
+    // 重大なエラーがないことを確認（警告は許容）
+    const criticalErrors = threeErrors.filter(error => 
+      !error.includes('Warning') && 
+      !error.includes('deprecated')
+    );
+    
+    expect(criticalErrors.length).toBe(0);
+  });
 });
 
 // デバッグ用のヘルパーテスト
 test.describe('デバッグヘルパー', () => {
-  test('スクリーンショットを撮る', async ({ page }) => {
+  test('牛サイトのスクリーンショットを撮る', async ({ page }) => {
     await page.goto('/');
-    await page.screenshot({ path: 'debug-screenshots/full-page.png', fullPage: true });
-    console.log('スクリーンショット保存: debug-screenshots/full-page.png');
+    
+    // Three.jsのロードを待つ
+    await page.waitForTimeout(3000);
+    
+    await page.screenshot({ path: 'debug-screenshots/cow-site-full.png', fullPage: true });
+    console.log('牛サイトのスクリーンショット保存: debug-screenshots/cow-site-full.png');
   });
 
-  test('各要素のスクリーンショットを撮る', async ({ page }) => {
+  test('3Dセクションのスクリーンショットを撮る', async ({ page }) => {
     await page.goto('/');
     
-    // コンテナのスクリーンショット
-    const container = page.locator('.container');
-    await container.screenshot({ path: 'debug-screenshots/container.png' });
-    console.log('コンテナのスクリーンショット保存: debug-screenshots/container.png');
+    // Three.jsのロードを待つ
+    await page.waitForTimeout(5000);
     
-    // 見出しのスクリーンショット
-    const heading = page.locator('h1');
-    await heading.screenshot({ path: 'debug-screenshots/heading.png' });
-    console.log('見出しのスクリーンショット保存: debug-screenshots/heading.png');
+    // Three.jsコンテナのスクリーンショット
+    const threeContainer = page.locator('#three-container');
+    await threeContainer.screenshot({ path: 'debug-screenshots/three-container.png' });
+    console.log('3Dコンテナのスクリーンショット保存: debug-screenshots/three-container.png');
     
-    // 各段落のスクリーンショット
-    const paragraphs = page.locator('p');
-    for (let i = 0; i < await paragraphs.count(); i++) {
-      await paragraphs.nth(i).screenshot({ path: `debug-screenshots/paragraph-${i}.png` });
-      console.log(`段落${i}のスクリーンショット保存: debug-screenshots/paragraph-${i}.png`);
+    // ヘッダーのスクリーンショット
+    const header = page.locator('.header');
+    await header.screenshot({ path: 'debug-screenshots/cow-header.png' });
+    console.log('ヘッダーのスクリーンショット保存: debug-screenshots/cow-header.png');
+    
+    // 牛の情報カードのスクリーンショット
+    const factCards = page.locator('.cow-fact-card');
+    for (let i = 0; i < await factCards.count(); i++) {
+      await factCards.nth(i).screenshot({ path: `debug-screenshots/cow-fact-card-${i}.png` });
+      console.log(`牛情報カード${i}のスクリーンショット保存: debug-screenshots/cow-fact-card-${i}.png`);
     }
   });
 
   test('インタラクションの録画', async ({ page }) => {
     await page.goto('/');
+    
+    // Three.jsのロードを待つ
+    await page.waitForTimeout(3000);
     
     // ページ全体をゆっくりスクロール
     await page.evaluate(() => {
@@ -124,36 +267,33 @@ test.describe('デバッグヘルパー', () => {
       });
     });
     
-    // 各要素にホバー
-    const container = page.locator('.container');
-    await container.hover();
-    await page.waitForTimeout(1000);
-    
-    const heading = page.locator('h1');
-    await heading.hover();
-    await page.waitForTimeout(1000);
-    
-    const paragraphs = page.locator('p');
-    for (let i = 0; i < await paragraphs.count(); i++) {
-      await paragraphs.nth(i).hover();
-      await page.waitForTimeout(500);
+    // 各牛情報カードにホバー
+    const factCards = page.locator('.cow-fact-card');
+    for (let i = 0; i < await factCards.count(); i++) {
+      await factCards.nth(i).hover();
+      await page.waitForTimeout(1000);
     }
     
     // 最終的なスクリーンショット
-    await page.screenshot({ path: 'debug-screenshots/final-state.png', fullPage: true });
-    console.log('最終状態のスクリーンショット保存: debug-screenshots/final-state.png');
+    await page.screenshot({ path: 'debug-screenshots/cow-site-final.png', fullPage: true });
+    console.log('最終状態のスクリーンショット保存: debug-screenshots/cow-site-final.png');
   });
 
   test('要素の詳細情報を出力', async ({ page }) => {
     await page.goto('/');
     
-    // コンテナの詳細情報
-    const container = page.locator('.container');
-    const boundingBox = await container.boundingBox();
-    console.log('コンテナのサイズと位置:', boundingBox);
+    // Three.jsコンテナの詳細情報
+    const threeContainer = page.locator('#three-container');
+    const boundingBox = await threeContainer.boundingBox();
+    console.log('Three.jsコンテナのサイズと位置:', boundingBox);
     
-    // 全ての要素の階層を出力
-    const htmlContent = await page.content();
-    console.log('ページのHTML構造:', htmlContent);
+    // 牛の情報カードの情報
+    const factCards = page.locator('.cow-fact-card');
+    const cardCount = await factCards.count();
+    console.log('牛情報カードの数:', cardCount);
+    
+    // ページのHTML構造（一部）
+    const titleText = await page.locator('.header h1').textContent();
+    console.log('メインタイトル:', titleText);
   });
 }); 
